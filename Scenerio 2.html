@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Priya's To-Do List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      margin-top: 0;
+      color: #333;
+      text-align: center;
+    }
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    button {
+      padding: 10px 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+    }
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .task-text {
+      cursor: pointer;
+      flex: 1;
+      word-break: break-word;
+    }
+    .task-text.completed {
+      color: #888;
+      text-decoration: line-through;
+    }
+    .delete-btn {
+      background-color: #dc3545;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+    .delete-btn:hover {
+      background-color: #c82333;
+    }
+    .footer-info {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>My To-Do List</h2>
+    
+    <!-- Requirement 1: Text box and an Add button -->
+    <div class="input-group">
+      <input type="text" id="taskInput" placeholder="Add a new task...">
+      <button id="addBtn">Add</button>
+    </div>
+
+    <!-- Requirement 3: Show each task in a list -->
+    <ul id="taskList"></ul>
+
+    <!-- Requirement 5: Summary counter / empty state -->
+    <div class="footer-info" id="footerInfo"></div>
+  </div>
+
+  <script>
+    // Requirement 2: Store every task as an object {text, done} inside an array
+    let tasks = [];
+
+    const taskInput = document.getElementById('taskInput');
+    const addBtn = document.getElementById('addBtn');
+    const taskList = document.getElementById('taskList');
+    const footerInfo = document.getElementById('footerInfo');
+
+    // Function to add a new task
+    function addTask() {
+      const text = taskInput.value.trim();
+      
+      // Requirement 2: Ignore the empty input
+      if (text === "") return;
+
+      tasks.push({ text: text, done: false });
+      taskInput.value = "";
+      renderTasks();
+    }
+
+    // Event listener for Add button click
+    addBtn.addEventListener('click', addTask);
+
+    // Requirement 1: Pressing the enter key in the text box must also add the task
+    taskInput.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        addTask();
+      }
+    });
+
+    // Toggle task completion status
+    function toggleTask(index) {
+      // Requirement 4: Clicking on the task text toggles it between completed and not completed
+      tasks[index].done = !tasks[index].done;
+      renderTasks();
+    }
+
+    // Remove a task
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      renderTasks();
+    }
+
+    // Render the UI based on state
+    function renderTasks() {
+      taskList.innerHTML = "";
+
+      if (tasks.length === 0) {
+        // Requirement 5: When the list is empty show "No tasks yet. Add one above!"
+        footerInfo.textContent = "No tasks yet. Add one above!";
+      } else {
+        tasks.forEach((task, index) => {
+          const li = document.createElement('li');
+
+          // Task text element
+          const span = document.createElement('span');
+          span.textContent = task.text;
+          span.className = `task-text ${task.done ? 'completed' : ''}`;
+          span.onclick = () => toggleTask(index);
+
+          // Requirement 3: Delete button next to it
+          const delBtn = document.createElement('button');
+          delBtn.textContent = 'Delete';
+          delBtn.className = 'delete-btn';
+          delBtn.onclick = () => deleteTask(index);
+
+          li.appendChild(span);
+          li.appendChild(delBtn);
+          taskList.appendChild(li);
+        });
+
+        // Requirement 5: Below the list show "X of Y tasks remaining"
+        const remainingCount = tasks.filter(t => !t.done).length;
+        const totalCount = tasks.length;
+        footerInfo.textContent = `${remainingCount} of ${totalCount} tasks remaining`;
+      }
+    }
+
+    // Initial render call for empty state
+    renderTasks();
+  </script>
+
+</body>
+</html>

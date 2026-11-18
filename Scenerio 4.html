@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Catalogue</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+    h2 {
+      margin-top: 0;
+      color: #333;
+      text-align: center;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    input[type="text"], select {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .status-text {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    /* Two-column grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+    .product-card {
+      background: #fafafa;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .product-name {
+      font-size: 16px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .category-tag {
+      background-color: #e2e8f0;
+      color: #2d3748;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .product-price {
+      color: #2b6cb0;
+      font-weight: bold;
+      font-size: 15px;
+    }
+    .no-results {
+      grid-column: span 2;
+      text-align: center;
+      color: #888;
+      padding: 30px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Product Catalogue</h2>
+    
+    <!-- Search box and Category dropdown -->
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Search products by name...">
+      <select id="categorySelect">
+        <option value="All">All Categories</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Stationery">Stationery</option>
+        <option value="Fashion">Fashion</option>
+      </select>
+    </div>
+
+    <!-- Status counter / empty message -->
+    <div class="status-text" id="statusText"></div>
+
+    <!-- Two-column grid container -->
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+
+  <script>
+    // 8 products with categories mapped from your list
+    const products = [
+      { name: "Wireless Mouse", category: "Electronics", price: 799 },
+      { name: "Bluetooth Speaker", category: "Electronics", price: 1999 },
+      { name: "USB Cable", category: "Electronics", price: 199 },
+      { name: "Notebook Pack", category: "Stationery", price: 249 },
+      { name: "Gel Pen Set", category: "Stationery", price: 99 },
+      { name: "Running Shoes", category: "Fashion", price: 2499 },
+      { name: "Cotton T-shirt", category: "Fashion", price: 599 },
+      { name: "Backpack", category: "Fashion", price: 1299 }
+    ];
+
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const productGrid = document.getElementById('productGrid');
+    const statusText = document.getElementById('statusText');
+
+    // Function to filter and render products
+    function updateStore() {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      const selectedCategory = categorySelect.value;
+
+      // Filter products based on search term and category
+      const filteredProducts = products.filter(product => {
+        const matchesName = product.name.toLowerCase().includes(searchTerm);
+        const matchesCategory = (selectedCategory === "All" || product.category === selectedCategory);
+        return matchesName && matchesCategory;
+      });
+
+      renderProducts(filteredProducts);
+    }
+
+    function renderProducts(filteredProducts) {
+      productGrid.innerHTML = "";
+
+      const totalCount = products.length;
+      const matchedCount = filteredProducts.length;
+
+      if (matchedCount === 0) {
+        statusText.textContent = "";
+        const noResultsDiv = document.createElement('div');
+        noResultsDiv.className = 'no-results';
+        noResultsDiv.textContent = "No products found.";
+        productGrid.appendChild(noResultsDiv);
+      } else {
+        statusText.textContent = `Showing ${matchedCount} of ${totalCount} products`;
+
+        filteredProducts.forEach(product => {
+          const card = document.createElement('div');
+          card.className = 'product-card';
+
+          card.innerHTML = `
+            <div class="product-name">${product.name}</div>
+            <div class="product-meta">
+              <span class="category-tag">${product.category}</span>
+              <span class="product-price">Rs. ${product.price}</span>
+            </div>
+          `;
+
+          productGrid.appendChild(card);
+        });
+      }
+    }
+
+    // Event listeners for real-time filtering
+    searchInput.addEventListener('input', updateStore);
+    categorySelect.addEventListener('change', updateStore);
+
+    // Initial render
+    updateStore();
+  </script>
+
+</body>
+</html>
